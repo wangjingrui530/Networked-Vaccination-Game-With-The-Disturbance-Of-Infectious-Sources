@@ -14,14 +14,14 @@ def GetVacNodes(total_attribute):
     return vacnodes
 
 
-def GetTopNodes():
-    return
+# def GetTopNodes():
+#     return
 
 
 def AnalyseVacHDnode(total_attribute, G, top_n_node):
     number = 0
     degrees = G.degree()
-    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True) # 可优化
+    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)
     for node, degree in G_sorted_degrees[:top_n_node]:
         if total_attribute[1][node] == 0:
             number += 1
@@ -30,7 +30,7 @@ def AnalyseVacHDnode(total_attribute, G, top_n_node):
 
 def AnalyseSeedsDistribution(total_attribute, G, top_n_node, seeds):
     degrees = G.degree()
-    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True) # 可优化
+    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)
     remove_G = G.copy()
     vacnodes = GetVacNodes(total_attribute)
     remove_G.remove_nodes_from(vacnodes)
@@ -67,7 +67,7 @@ def AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node):
     fr_between_vac_rate = 0
 
     degrees = G.degree()
-    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True) # 可优化
+    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)
 
     for i in range(size):
         if total_attribute[1][i] == 1 and total_attribute[2][i] == 0:
@@ -102,9 +102,9 @@ def AnalyseStateTransition(total_attribute, G, size, top_n_node):
     top_nodes_statetrans = [0, 0, 0, 0, 0, 0, 0, 0]
 
     degrees = G.degree()
-    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)  # 可优化
+    G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)
 
-    for i in range(size): # 全局状态转移信息的统计分析
+    for i in range(size):
         if total_attribute[2][i] == 0 and total_attribute[1][i] == 1 and total_attribute[0][i] == 1:
             statetrans[0] += 1 / size # s(nv)_nv
         if total_attribute[2][i] == 2 and total_attribute[0][i] == 1:
@@ -124,7 +124,7 @@ def AnalyseStateTransition(total_attribute, G, size, top_n_node):
             statetrans[7] += 1 / size # nv_v
 
 
-    for i, degree in G_sorted_degrees[:top_n_node]: # 高度数节点状态转移信息的统计分析
+    for i, degree in G_sorted_degrees[:top_n_node]:
         if total_attribute[2][i] == 0 and total_attribute[1][i] == 1 and total_attribute[0][i] == 1:
             top_nodes_statetrans[0] += 1 / top_n_node  # s(nv)_nv
         if total_attribute[2][i] == 2 and total_attribute[0][i] == 1:
@@ -186,19 +186,19 @@ def AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums, compare = 
     remove_G.remove_nodes_from(vacnodes)
 
     if sum(seeds) == 0:
-        index = 0 # 连通分量索引，兼统计连通分量数量
+        index = 0
         for cc in nx.connected_components(remove_G):
             index += 1
         return index, 0, 0, 0, 0
 
     with_seed_cc = {}
-    index = 0 # 连通分量索引，兼统计连通分量数量
+    index = 0
     for cc in nx.connected_components(remove_G):
         for seed in seeds:
             if seed in cc:
                 if index not in with_seed_cc.keys():
                     with_seed_cc[index] = len(cc)
-                    break;
+                    break
         index += 1
 
     with_seed_cc_size = sum(with_seed_cc.values())
@@ -213,28 +213,3 @@ def AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums, compare = 
 
     return index, with_seed_cc_size, with_seed_cc_infect_rate, with_seed_cc_allcc_size_rate, len(max(nx.connected_components(remove_G), key=lambda x:len(x)))
 
-
-
-
-# def AnalyseRemoveGraph(total_attribute, G):
-#     remove_G = G.copy()
-#     vacnodes = IM.GetVacNodes(total_attribute)
-#     remove_G.remove_nodes_from(vacnodes)
-#
-#     degrees = G.degree()
-#     G_sorted_degrees = sorted(degrees, key=lambda x: x[1], reverse=True)
-#     print("连通片数量: ", nx.number_connected_components(remove_G))
-#
-#     cc_set = []
-#     for node, degree in G_sorted_degrees[:20]:
-#         if total_attribute[0][node] != 0:
-#             index = 0
-#             for cc in nx.connected_components(remove_G):
-#                 if node in cc:
-#                     print("高度节点信息: ", node, degree)
-#                     print("所属连通分量: ", index)
-#                     # print(cc)
-#                     cc_set.append((node, index))
-#                 index += 1
-#     print("未接种高度节点在各个连通分量的分布情况: ", cc_set)
-#     print("\n\n")

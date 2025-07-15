@@ -26,7 +26,6 @@ def Random(total_attribute, seeds, infectseeds, size):
     while seeds_num < infectseeds:
         i = random.randrange(size)
         if total_attribute[1][int(i)] != 0:
-            # tips3 in的逻辑判断语句好像不可用，可以自己写代码来实现相应的逻辑判断
             not_in = 1
             for j in seeds[0:seeds_num]:
                 if i == j:
@@ -68,7 +67,6 @@ def induct(total_attribute, seeds, infectseeds, G):
             infectseeds -= 1
             cc_set.append(index)
             if infectseeds == 0:
-                # print("初始感染节点的连通片分布情况: ", cc_set) # !!!
                 return seeds
         index += 1
 
@@ -231,7 +229,7 @@ complex networks via node dominance" and yields the following output: bool, Domi
         G = G.copy()
     if analytical == False:
         if sigma == -1:
-            sigma, _ = optimal_sigma(G, analytical = False, dt=dt, epsilon=epsilon, maxIter = maxIter, checkStep = checkStep) 
+            sigma, _ = optimal_sigma(G, analytical = False, dt=dt, epsilon=epsilon, maxIter = maxIter, checkStep = checkStep)
         pGAdj = sigma*G.astype(np.float64)
         Psi = np.ones(pGAdj.shape[0]).astype(np.float64)/pGAdj.shape[0]
         maxVals = np.zeros(int(maxIter/checkStep)).astype(np.float64)
@@ -255,7 +253,7 @@ complex networks via node dominance" and yields the following output: bool, Domi
         return True, Psi
     else:
         if sigma == -1:
-            sigma = optimal_sigma(G, analytical = True, dt=dt, epsilon=epsilon, maxIter = maxIter, checkStep = checkStep) 
+            sigma = optimal_sigma(G, analytical = True, dt=dt, epsilon=epsilon, maxIter = maxIter, checkStep = checkStep)
         Psi = sp.sparse.linalg.spsolve(sigma*G + sp.sparse.identity(G.shape[0]), sigma*G.sum(axis=-1))
         return True, Psi
     

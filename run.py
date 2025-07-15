@@ -20,9 +20,8 @@ def run_x_time(args):
     attack = args.attack
     analyse = args.analyse
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
+    # vac: vacstate=0; non-vac: vacstate=1
+    # S: state=0; I: state=1; R: state=2
     # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
@@ -41,19 +40,16 @@ def run_x_time(args):
     if analyse:
         top_n_node = 20
         result_hdnodes_vac = [0 for i in range(iteration)]
-        # 连通分量结果分析
         result_seeds_distribution = [0 for i in range(iteration)]
         result_cc_number = [0 for i in range(iteration)]
         result_with_seed_cc_size = [0 for i in range(iteration)]
         result_with_seed_cc_infect_rate = [0 for i in range(iteration)]
         result_with_seed_cc_allcc_size_rate = [0 for i in range(iteration)]
         result_max_cc_size = [0 for i in range(iteration)]
-        # 搭便车者结果分析
         result_free_riders = [0 for i in range(iteration)]
         result_free_riders_between_hdnodes = [0 for i in range(iteration)]
         result_free_riders_between_vac = [0 for i in range(iteration)]
         result_free_riders_between_vac_rate = [0 for i in range(iteration)]
-        # 状态转移结果分析
         result_states_trans = [[0 for i in range(iteration)] for j in range(8)]
         result_top_nodes_state_trans = [[0 for i in range(iteration)] for j in range(8)]
 
@@ -85,7 +81,6 @@ def run_x_time(args):
                 seeds = mySIR.ChooseInfectSeeds(total_attribute, G, size, infectseeds, attack)
 
             if analyse:
-                # 分析高度节点的接种比例，传染源的分布情况
                 result_hdnodes_vac[timestep] += Analyse.AnalyseVacHDnode(total_attribute, G, top_n_node) / average
                 result_seeds_distribution[timestep] += Analyse.AnalyseSeedsDistribution(total_attribute, G, top_n_node, seeds) / average
 
@@ -104,26 +99,23 @@ def run_x_time(args):
             mySIR.Imitation(total_attribute, neighborsArray, size, k)
 
             if analyse:
-                # 分析搭便车，个体状态转移
                 temp_fr = Analyse.AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node)
                 temp_state = Analyse.AnalyseStateTransition(total_attribute, G, size, top_n_node)
-                result_free_riders[timestep] += temp_fr[0] / average    # 搭便车者数量
-                result_free_riders_between_hdnodes[timestep] += temp_fr[1] / average    # 高度节点周围的高度节点数量
-                result_free_riders_between_vac[timestep] += temp_fr[2] / average    # 接种者周围的搭便车者数量
-                result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average   # 接种者周围的搭便车比例平均值
+                result_free_riders[timestep] += temp_fr[0] / average
+                result_free_riders_between_hdnodes[timestep] += temp_fr[1] / average
+                result_free_riders_between_vac[timestep] += temp_fr[2] / average
+                result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
                 for state_index in range(8):
                     result_states_trans[state_index][timestep] += temp_state[0][state_index] / average
                     result_top_nodes_state_trans[state_index][timestep] += temp_state[1][state_index] / average
 
-                # 传染源在连通分量的传染情况
                 cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
-                result_cc_number[timestep] += cc_result[0] / average    # 连通片数量
-                result_with_seed_cc_size[timestep] += cc_result[1] / average    # 有传染源的连通片规模之和
-                result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average # 有传染源的连通片中感染率
-                result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average # 有传染源的连通片规模与所有连通片规模的比值
-                result_max_cc_size[timestep] += cc_result[4] / average # 最大连通分量规模
+                result_cc_number[timestep] += cc_result[0] / average
+                result_with_seed_cc_size[timestep] += cc_result[1] / average
+                result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
+                result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
+                result_max_cc_size[timestep] += cc_result[4] / average
 
-                # 获取gephi数据
                 Analyse.GetDynamicGraphData(total_attribute, seeds, timestep, size, interval, score)
 
             mySIR.UpdateStrategy(total_attribute, size)
@@ -210,10 +202,6 @@ def run_x_parameter(args, x_p_name, list_p):
     k = args.k
     attack = args.attack
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
-    # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
     # results
@@ -299,10 +287,6 @@ def run_compare_attact_x_time(args, compare_parameter):
     analyse = args.analyse
     compare_attack = compare_parameter
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
-    # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
     # results
@@ -319,23 +303,19 @@ def run_compare_attact_x_time(args, compare_parameter):
     if analyse:
         top_n_node = 20
         result_hdnodes_vac = [0 for i in range(iteration)]
-        # 连通分量结果分析
         result_seeds_distribution = [0 for i in range(iteration)]
         result_cc_number = [0 for i in range(iteration)]
         result_with_seed_cc_size = [0 for i in range(iteration)]
         result_with_seed_cc_infect_rate = [0 for i in range(iteration)]
         result_with_seed_cc_allcc_size_rate = [0 for i in range(iteration)]
         result_max_cc_size = [0 for i in range(iteration)]
-        # 搭便车者结果分析
         result_free_riders = [0 for i in range(iteration)]
         result_free_riders_between_hdnodes = [0 for i in range(iteration)]
         result_free_riders_between_vac = [0 for i in range(iteration)]
         result_free_riders_between_vac_rate = [0 for i in range(iteration)]
-        # 状态转移结果分析
         result_states_trans = [[0 for i in range(iteration)] for j in range(8)]
         result_top_nodes_state_trans = [[0 for i in range(iteration)] for j in range(8)]
 
-        # 对比参数结果
         result_compare_vac = [0 for i in range(iteration)]
         result_compare_infect = [0 for i in range(iteration)]
         result_compare_S_infect = [0 for i in range(iteration)]
@@ -374,7 +354,6 @@ def run_compare_attact_x_time(args, compare_parameter):
             compare_seeds = mySIR.ChooseInfectSeeds(total_attribute, G, size, infectseeds, compare_attack)
 
             if analyse:
-                # 分析高度节点的接种比例，传染源的分布情况
                 result_hdnodes_vac[timestep] += Analyse.AnalyseVacHDnode(total_attribute, G, top_n_node) / average
                 result_seeds_distribution[timestep] += Analyse.AnalyseSeedsDistribution(total_attribute, G, top_n_node, seeds) / average
                 result_compare_seeds_distribution[timestep] += Analyse.AnalyseSeedsDistribution(temp_total_attribute, G, top_n_node, compare_seeds) / average
@@ -407,55 +386,47 @@ def run_compare_attact_x_time(args, compare_parameter):
                 result_compare_S_infect[timestep] += (temp_infect_nums / (size - mySIR.NumOfVaccination(total_attribute))) / average
 
             if analyse:
-                # 分析搭便车，个体状态转移
                 temp_fr = Analyse.AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node)
                 temp_state = Analyse.AnalyseStateTransition(total_attribute, G, size, top_n_node)
-                result_free_riders[timestep] += temp_fr[0] / average    # 搭便车者数量
-                result_free_riders_between_hdnodes[timestep] += temp_fr[1] / average    # 高度节点周围的高度节点数量
-                result_free_riders_between_vac[timestep] += temp_fr[2] / average    # 接种者周围的搭便车者数量
-                result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average   # 接种者周围的搭便车比例平均值
+                result_free_riders[timestep] += temp_fr[0] / average
+                result_free_riders_between_hdnodes[timestep] += temp_fr[1] / average
+                result_free_riders_between_vac[timestep] += temp_fr[2] / average
+                result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
                 for state_index in range(8):
                     result_states_trans[state_index][timestep] += temp_state[0][state_index] / average
                     result_top_nodes_state_trans[state_index][timestep] += temp_state[1][state_index] / average
 
-                # 传染源在连通分量的传染情况
                 cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
-                result_cc_number[timestep] += cc_result[0] / average    # 连通片数量
-                result_with_seed_cc_size[timestep] += cc_result[1] / average    # 有传染源的连通片规模之和
-                result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average # 有传染源的连通片中感染率
-                result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average #有传染源的连通片规模与所有连通片规模的比值
+                result_cc_number[timestep] += cc_result[0] / average
+                result_with_seed_cc_size[timestep] += cc_result[1] / average
+                result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
+                result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
                 result_max_cc_size[timestep] += cc_result[4] / average
                 origin_max_cc = cc_result[4] / average
 
-                # 获取gephi数据
                 Analyse.GetDynamicGraphData(total_attribute, seeds, timestep, size, interval, score)
 
-
-                # compare attack的结果分析
                 temp_state = Analyse.AnalyseStateTransition(temp_total_attribute, G, size, top_n_node)
                 temp_fr = Analyse.AnalyseFR(temp_total_attribute, neighborsArray, G, size, top_n_node)
-                result_compare_free_riders[timestep] += temp_fr[0] / average    # 搭便车者数量
-                result_compare_free_riders_between_hdnodes[timestep] += temp_fr[1] / average    # 高度节点周围的高度节点数量
-                result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average    # 接种者周围的搭便车者数量
-                result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average   # 接种者周围的搭便车比例平均值
+                result_compare_free_riders[timestep] += temp_fr[0] / average
+                result_compare_free_riders_between_hdnodes[timestep] += temp_fr[1] / average
+                result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average
+                result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
                 for state_index in range(8):
                     result_compare_states_trans[state_index][timestep] += temp_state[0][state_index] / average
                     result_compare_top_nodes_state_trans[state_index][timestep] += temp_state[1][state_index] / average
-                # 传染源在连通分量的传染情况
+
                 cc_result = Analyse.AnalyseConnectedComponent(temp_total_attribute, G, compare_seeds, temp_infect_nums)
-                result_compare_with_seed_cc_size[timestep] += cc_result[1] / average    # 有传染源的连通片规模之和
-                result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average # 有传染源的连通片中感染率
-                result_compare_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average #有传染源的连通片规模与所有连通片规模的比值
+                result_compare_with_seed_cc_size[timestep] += cc_result[1] / average
+                result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
+                result_compare_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
 
                 if timestep == 0:
                     result_compare_max_cc_size[timestep] += origin_max_cc
                 if timestep != iteration - 1:
                     result_compare_max_cc_size[timestep + 1] += Analyse.AnalyseConnectedComponent(temp_total_attribute, G, compare_seeds, temp_infect_nums, compare = True) / average
 
-
-                # 获取gephi数据
                 Analyse.GetDynamicGraphData(temp_total_attribute, compare_seeds, timestep, size, compare_interval, compare_score)
-
 
             mySIR.UpdateStrategy(total_attribute, size)
 
@@ -485,7 +456,6 @@ def run_compare_attact_x_time(args, compare_parameter):
                 df1.to_excel(excel_writer=writer, sheet_name="node", index=None)
                 df2.to_excel(excel_writer=writer, sheet_name="egde", index=None)
 
-    # 结果保存与可视化
     data = [result_vac, result_infect, result_S_infect, result_compare_vac, result_compare_infect, result_compare_S_infect]
     Plot.Visualization(list(range(iteration)), [result_vac, result_infect, result_compare_vac, result_compare_infect], 'time', 'proportion', 'vac-infect',
                        ['{}_vac'.format(attack), '{}_infect'.format(attack), '{}_vac'.format(compare_attack), '{}_infect'.format(compare_attack)],
@@ -497,7 +467,6 @@ def run_compare_attact_x_time(args, compare_parameter):
                     '{}_infect'.format(compare_attack), '{}_S_infect'.format(compare_attack)],
              list(range(1, iteration+1)), r'name\t', path+'.csv')
 
-    # 统计social cost
     for timestep in range(iteration):
         result_sc[timestep] += (result_vac[timestep] * c + result_infect[timestep]) * size
         result_total_sc[timestep] += sum(result_sc[:timestep+1])
@@ -581,10 +550,6 @@ def run_x_time_resilience(args, disrupt_start_time, disrupt_time, disrupt_attack
     analyse = args.analyse
     compare_attack = disrupt_attack
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
-    # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
     # results
@@ -597,17 +562,14 @@ def run_x_time_resilience(args, disrupt_start_time, disrupt_time, disrupt_attack
 
     if analyse:
         top_n_node = 20
-        # 连通分量结果分析
         result_cc_number = [0 for i in range(iteration)]
         result_with_seed_cc_size = [0 for i in range(iteration)]
         result_with_seed_cc_infect_rate = [0 for i in range(iteration)]
         result_with_seed_cc_allcc_size_rate = [0 for i in range(iteration)]
-        # 搭便车者结果分析
         result_free_riders = [0 for i in range(iteration)]
         result_free_riders_between_vac = [0 for i in range(iteration)]
         result_free_riders_between_vac_rate = [0 for i in range(iteration)]
 
-        # 对比参数结果
         result_compare_vac = [0 for i in range(iteration)]
         result_compare_infect = [0 for i in range(iteration)]
         result_compare_sc = [0 for i in range(iteration)]
@@ -649,21 +611,21 @@ def run_x_time_resilience(args, disrupt_start_time, disrupt_time, disrupt_attack
                 if analyse:
                     # 分析搭便车，个体状态转移
                     temp_fr = Analyse.AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node)
-                    result_free_riders[timestep] += temp_fr[0] / average  # 搭便车者数量
+                    result_free_riders[timestep] += temp_fr[0] / average
                     result_compare_free_riders[timestep] = result_free_riders[timestep]
-                    result_free_riders_between_vac[timestep] += temp_fr[2] / average  # 接种者周围的搭便车者数量
+                    result_free_riders_between_vac[timestep] += temp_fr[2] / average
                     result_compare_free_riders_between_vac[timestep] = result_free_riders_between_vac[timestep]
-                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average  # 接种者周围的搭便车比例平均值
+                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
                     result_compare_free_riders_between_vac_rate[timestep] = result_free_riders_between_vac_rate[timestep]
                     # 传染源在连通分量的传染情况
                     cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
-                    result_cc_number[timestep] += cc_result[0] / average  # 连通片数量
+                    result_cc_number[timestep] += cc_result[0] / average
                     result_compare_cc_number[timestep] = result_cc_number[timestep]
-                    result_with_seed_cc_size[timestep] += cc_result[1] / average  # 有传染源的连通片规模之和
+                    result_with_seed_cc_size[timestep] += cc_result[1] / average
                     result_compare_with_seed_cc_size[timestep] = result_with_seed_cc_size[timestep]
-                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average  # 有传染源的连通片中感染率
+                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
                     result_compare_with_seed_cc_infect_rate[timestep] = result_with_seed_cc_infect_rate[timestep]
-                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average  # 有传染源的连通片规模与所有连通片规模的比值
+                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
                     result_compare_with_seed_cc_allcc_size_rate[timestep] = result_with_seed_cc_allcc_size_rate[timestep]
                 mySIR.UpdateStrategy(total_attribute, size)
 
@@ -699,31 +661,30 @@ def run_x_time_resilience(args, disrupt_start_time, disrupt_time, disrupt_attack
                 mySIR.Imitation(temp_total_attribute, neighborsArray, size, k)
 
                 if analyse:
-                    # 分析搭便车，个体状态转移
                     temp_fr = Analyse.AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node)
-                    result_free_riders[timestep] += temp_fr[0] / average  # 搭便车者数量
-                    result_free_riders_between_vac[timestep] += temp_fr[2] / average  # 接种者周围的搭便车者数量
-                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average  # 接种者周围的搭便车比例平均值
-                    # 传染源在连通分量的传染情况
-                    cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
-                    result_cc_number[timestep] += cc_result[0] / average  # 连通片数量
-                    result_with_seed_cc_size[timestep] += cc_result[1] / average  # 有传染源的连通片规模之和
-                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average  # 有传染源的连通片中感染率
-                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average  # 有传染源的连通片规模与所有连通片规模的比值
+                    result_free_riders[timestep] += temp_fr[0] / average
+                    result_free_riders_between_vac[timestep] += temp_fr[2] / average
+                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
 
-                    # compare attack的结果分析
+                    cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
+                    result_cc_number[timestep] += cc_result[0] / average
+                    result_with_seed_cc_size[timestep] += cc_result[1] / average
+                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
+                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
+
+                    # compare attack
                     temp_fr = Analyse.AnalyseFR(temp_total_attribute, neighborsArray, G, size, top_n_node)
-                    result_compare_free_riders[timestep] += temp_fr[0] / average  # 搭便车者数量
-                    result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average  # 接种者周围的搭便车者数量
-                    result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average  # 接种者周围的搭便车比例平均值
-                    # 传染源在连通分量的传染情况
+                    result_compare_free_riders[timestep] += temp_fr[0] / average
+                    result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average
+                    result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
+
                     cc_result = Analyse.AnalyseConnectedComponent(temp_total_attribute, G, compare_seeds,
                                                                   temp_infect_nums)
-                    result_compare_cc_number[timestep] += cc_result[0] / average  # 连通片数量
-                    result_compare_with_seed_cc_size[timestep] += cc_result[1] / average  # 有传染源的连通片规模之和
-                    result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average  # 有传染源的连通片中感染率
+                    result_compare_cc_number[timestep] += cc_result[0] / average
+                    result_compare_with_seed_cc_size[timestep] += cc_result[1] / average
+                    result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
                     result_compare_with_seed_cc_allcc_size_rate[timestep] += cc_result[
-                                                                                 3] / average  # 有传染源的连通片规模与所有连通片规模的比值
+                                                                                 3] / average
 
                 mySIR.UpdateStrategy(total_attribute, size)
                 mySIR.UpdateStrategy(temp_total_attribute, size)
@@ -755,37 +716,34 @@ def run_x_time_resilience(args, disrupt_start_time, disrupt_time, disrupt_attack
                 mySIR.Imitation(temp_total_attribute, neighborsArray, size, k)
 
                 if analyse:
-                    # 分析搭便车，个体状态转移
                     temp_fr = Analyse.AnalyseFR(total_attribute, neighborsArray, G, size, top_n_node)
-                    result_free_riders[timestep] += temp_fr[0] / average  # 搭便车者数量
-                    result_free_riders_between_vac[timestep] += temp_fr[2] / average  # 接种者周围的搭便车者数量
-                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average  # 接种者周围的搭便车比例平均值
-                    # 传染源在连通分量的传染情况
-                    cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
-                    result_cc_number[timestep] += cc_result[0] / average  # 连通片数量
-                    result_with_seed_cc_size[timestep] += cc_result[1] / average  # 有传染源的连通片规模之和
-                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average  # 有传染源的连通片中感染率
-                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average  # 有传染源的连通片规模与所有连通片规模的比值
+                    result_free_riders[timestep] += temp_fr[0] / average
+                    result_free_riders_between_vac[timestep] += temp_fr[2] / average
+                    result_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
 
-                    # compare attack的结果分析
+                    cc_result = Analyse.AnalyseConnectedComponent(total_attribute, G, seeds, infect_nums)
+                    result_cc_number[timestep] += cc_result[0] / average
+                    result_with_seed_cc_size[timestep] += cc_result[1] / average
+                    result_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
+                    result_with_seed_cc_allcc_size_rate[timestep] += cc_result[3] / average
+
+                    # compare attack
                     temp_fr = Analyse.AnalyseFR(temp_total_attribute, neighborsArray, G, size, top_n_node)
-                    result_compare_free_riders[timestep] += temp_fr[0] / average  # 搭便车者数量
-                    result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average  # 接种者周围的搭便车者数量
-                    result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average  # 接种者周围的搭便车比例平均值
-                    # 传染源在连通分量的传染情况
+                    result_compare_free_riders[timestep] += temp_fr[0] / average
+                    result_compare_free_riders_between_vac[timestep] += temp_fr[2] / average
+                    result_compare_free_riders_between_vac_rate[timestep] += temp_fr[3] / average
+
                     cc_result = Analyse.AnalyseConnectedComponent(temp_total_attribute, G, compare_seeds,
                                                                   temp_infect_nums)
-                    result_compare_cc_number[timestep] += cc_result[0] / average  # 连通片数量
-                    result_compare_with_seed_cc_size[timestep] += cc_result[1] / average  # 有传染源的连通片规模之和
-                    result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average  # 有传染源的连通片中感染率
+                    result_compare_cc_number[timestep] += cc_result[0] / average
+                    result_compare_with_seed_cc_size[timestep] += cc_result[1] / average
+                    result_compare_with_seed_cc_infect_rate[timestep] += cc_result[2] / average
                     result_compare_with_seed_cc_allcc_size_rate[timestep] += cc_result[
-                                                                                 3] / average  # 有传染源的连通片规模与所有连通片规模的比值
+                                                                                 3] / average
 
                 mySIR.UpdateStrategy(total_attribute, size)
                 mySIR.UpdateStrategy(temp_total_attribute, size)
 
-    # 结果保存与可视化
-    # 统计social cost
     for timestep in range(iteration):
         result_sc[timestep] += (result_vac[timestep] * c + result_infect[timestep]) * size
         result_compare_sc[timestep] += (result_compare_vac[timestep] * c + result_compare_infect[timestep]) * size
@@ -864,10 +822,6 @@ def run_upper_bound_x_parameter(args, x_p_name, list_p):
     net_type = args.net_type
     k = args.k
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
-    # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
     # results
@@ -904,7 +858,6 @@ def run_upper_bound_x_parameter(args, x_p_name, list_p):
                 mySIR.Imitation(total_attribute, neighborsArray, size, k)
                 mySIR.UpdateStrategy(total_attribute, size)
 
-        # 统计social cost
         for timestep in range(iteration):
             result_sc[timestep] += (result_vac[timestep] * c + result_infect[timestep]) * size
             result_total_sc[timestep] += sum(result_sc[:timestep + 1])
@@ -932,10 +885,6 @@ def run_lower_bound_x_parameter(args, x_p_name, list_p):
     net_type = args.net_type
     k = args.k
 
-    # 属性列表
-    # 接种vacstate=0;不接种vacstate=1
-    # S态state=0;I态state=1;R态state=2
-    # 0:tempvacstate, 1:vacstate, 2:state, 3:payoff, 4:transition_rate
     total_attribute = np.asarray([[0] * size for i in range(5)], dtype='float32')
 
     # results
@@ -971,7 +920,6 @@ def run_lower_bound_x_parameter(args, x_p_name, list_p):
                 mySIR.Imitation(total_attribute, neighborsArray, size, k)
                 mySIR.UpdateStrategy(total_attribute, size)
 
-        # 统计social cost
         for timestep in range(iteration):
             result_sc[timestep] += (result_vac[timestep] * c + result_infect[timestep]) * size
             result_total_sc[timestep] += sum(result_sc[:timestep + 1])
@@ -1017,7 +965,7 @@ def get_common_args():
     parser.add_argument('--iteration', type=int, default=int(3000), help='Number of experiment iterations')
     # Random; HDA; PG; KS; EC; CC; BC; None; induct; DR; CI
     parser.add_argument('--attack', type=str, default="CI", help='Propagation source selection method')
-    parser.add_argument('--origin', type=int, default=False, help='Only use origin graph information') # 待实现
+    parser.add_argument('--origin', type=int, default=False, help='Only use origin graph information')
     parser.add_argument('--analyse', type=int, default=True, help='Analyse module switch')
     return parser.parse_args()
 
@@ -1027,14 +975,7 @@ if __name__ == "__main__":
     print(args)
     # result = run_x_parameter(args, "c", np.linspace(0, 1, 21))
     result = run_x_time(args)
-    # result = run_x_parameter(args, "c", np.linspace(0, 1, 6))
     # result = run_compare_attact_x_time(args, "Random")
-    
-    # start_time = 100
-    # continue_time = 90
-    # disrupt = 'None'
-    # print('disrupt:{},  episode:{}--{}'.format(disrupt, start_time, start_time+continue_time))
-    # result = run_x_time_resilience(args, start_time, continue_time, disrupt)
 
-    # run_upper_bound_x_parameter(args, "c", np.linspace(0, 1, 21))
-    # run_lower_bound_x_parameter(args, "c", np.linspace(0, 1, 21))
+
+

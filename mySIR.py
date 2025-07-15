@@ -42,11 +42,9 @@ def Graph_generation(size, average_degree, net_type="complete", seed = None):
 def GraphToArray(G):
     neighborsList = []
     neighborsArray = []
-    # 存储图中节点序号的邻居列表
     for i in G.nodes():  # initialize neighbors
         neighbors = list(G.adj[i])
         neighborsList.append(neighbors)
-        #!!! 1000这个值从理论上来说没问题，但是在网络极大时也存在出错的可能性
         temp = np.hstack((neighbors, np.linspace(-1, -1, 1000 - len(neighbors)))).tolist()
         neighborsArray.append(temp)
     neighborsArray = np.asarray(neighborsArray, dtype='int32')
@@ -55,7 +53,6 @@ def GraphToArray(G):
 
 @jit(nopython=True)
 def NumOfVaccination(total_attribute):
-    # tips1 array要作为参数传入(list类型会出很多问题，最好不要用list)
     num = 0
     for i in total_attribute[1]:
         if i == 0:
@@ -67,10 +64,10 @@ def NumOfVaccination(total_attribute):
 def InitalizationVac(total_attribute, size):
     for i in range(size):
         if random.random() <= 0.5:
-            total_attribute[0][i] = 0  # 接种
+            total_attribute[0][i] = 0   # vac
             total_attribute[1][i] = 0
         else:
-            total_attribute[0][i] = 1
+            total_attribute[0][i] = 1   # non-vac
             total_attribute[1][i] = 1
 
 
@@ -120,12 +117,10 @@ def ChooseInfectSeeds(total_attribute, G, size, infectseeds, attack):
 
 @jit(nopython=True)
 def InitalizationInfect(total_attribute, infectseeds, seeds, size):
-    # tips2 不要在函数里面创建list临时变量，会出问题的
-    # 最好的做法就是传一个array数组作为临时数组实现相应功能 例如此处传入的seeds
     for i in range(size):
         total_attribute[2][int(i)] = 0
 
-    if sum(seeds) == 0: # seeds全为0，即表示无传染源
+    if sum(seeds) == 0:
         return
 
     vacnum = 0
@@ -166,7 +161,6 @@ def TransitionRateSum(total_attribute, neighborsArray, size, r, g):
 
 @jit(nopython=True)
 def GillespieAlgorithm(total_attribute, neighborsArray, lamda, infectseeds, size, r, g):
-    # tips4 可变变量与不可变变量，在编程时需要注意
     I = infectseeds
     if lamda == 0:
         return 0
@@ -213,7 +207,6 @@ def GillespieAlgorithm(total_attribute, neighborsArray, lamda, infectseeds, size
 
 @jit(nopython=True)
 def CalCost(total_attribute, size, c):
-    # tips5 若参数被改变，则一定要传到函数里面
     for i in range(size):
         if total_attribute[1][i] == 0:
             total_attribute[3][i] = -c
@@ -243,7 +236,7 @@ def Imitation(total_attribute, neighborsArray, size, K):
             if j == -1:
                 break
             neighbors_number += 1
-        if neighbors_number == 0: # 非连通图判断
+        if neighbors_number == 0:
             continue
         imitation_node = neighborsArray[i][int(random.randrange(neighbors_number))]
         prob = FeimiFunction(total_attribute, i, imitation_node, K)
