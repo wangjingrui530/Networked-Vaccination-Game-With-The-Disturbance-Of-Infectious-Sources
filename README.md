@@ -1,9 +1,9 @@
 
 
 # Networked-Vaccination-Game-With-The-Disturbance-Of-Infectious-Sources
-The social dilemma of voluntary vaccination as a public goods dilemma has obtained extensive attention from researchers. Prior networked vaccination game studies often assume infectious sources are randomly distributed. However, the outbreak of an epidemic is often associated with various factors such as spatial location, individual heterogeneity, and human interference. To clarify the crucial role of infectious sources in the population of vaccination behaviors and epidemic scale, we propose a networked vaccination game model incorporating disturbances in infectious source. Several infectious source selection strategies are designed from the methods of node centrality, key node evaluation, and influence maximization. Results show that for moderate vaccination cost, these strategies lead to significantly different vaccination behaviors. Focusing on two representative strategies, we identify the contagion ability of the infectious source selection strategy as a key factor influencing the result of networked vaccination game. Specifically, the strategy with stronger propagation capability effectively promotes vaccination, whereas weaker ones suppress it. State transition analysis reveals distinct mechanisms behind these strategies. Furthermore, treating infectious source disturbance as a short-term local shock, we assess the resilience of networked vaccination game via robustness and adaptability from a social system perspective. Experimental results indicate poor resilience when facing disturbances from the strategy with strong propagation capability or pandemic fatigue. Conversely, when encountering the infectious source disturbance with weaker propagation capacity, the system demonstrates good resilience, and the result of the disturbed system can nearly converge to the original system. We hope these findings can shed light on how social systems recover from the epidemic risk with the shock of infectious sources.
+The social dilemma of voluntary vaccination as a public goods dilemma has obtained extensive attention from researchers. Prior studies of networked vaccination game often assume infectious sources are randomly distributed. However, the outbreak of an epidemic is often associated with various factors such as spatial location, individual heterogeneity, and human interference. To clarify the crucial role of infectious sources in the population of vaccination behaviors and epidemic scale, we propose a networked vaccination game model incorporating disturbances in infectious source. Several infectious source selection strategies are designed from the methods of node centrality, key node evaluation, and influence maximization. Results show that for moderate vaccination cost, these strategies lead to significantly different vaccination behaviors. Focusing on two representative strategies, we identify the contagion ability of the infectious source selection strategy as a key factor influencing the result of networked vaccination game. Specifically, the strategy with stronger propagation capability effectively promotes vaccination, whereas weaker ones suppress it. State transition analysis reveals distinct mechanisms behind these strategies. Furthermore, treating infectious source disturbance as a short-term local shock, we assess the resilience of networked vaccination game via robustness and adaptability from a social system perspective. Experimental results indicate poor resilience when facing disturbances from the strategy with strong propagation capability or pandemic fatigue. Conversely, when encountering the infectious source disturbance with weaker propagation capacity, the system demonstrates good resilience, and the result of the disturbed system can nearly converge to the original system. We hope these findings can shed light on how social systems recover from the epidemic risk with the shock of infectious sources.
 
-This repository hosts the source code of **Impact of infectious sources on the vaccination dilemma in networked population**, which will be published in **Chaos, Solitons & Fractals**.
+This repository hosts the source code of **[Impact of infectious sources on the vaccination dilemma in networked population](https://www.sciencedirect.com/science/article/abs/pii/S0960077925009385)**, which has been published in **Chaos, Solitons & Fractals**.
 
 ## Requirements
 It is worth mentioning that because python runs slowly, we use **numba** library to improve the speed of code running.
@@ -29,6 +29,19 @@ pip install -r requirements.txt
 python run.py
 ```
 
+## Citation
+ Please cite this work if you find it useful:
+```
+@article{wang2025impact,
+  title={Impact of infectious sources on the vaccination dilemma in networked population},
+  author={Wang, Jingrui and Li, Juan and Wang, Zhen},
+  journal={Chaos, Solitons \& Fractals},
+  volume={200},
+  pages={116925},
+  year={2025},
+  publisher={Elsevier}
+}
+```
 
 ## Contact
 Please email [Jingrui Wang](https://scholar.google.com/citations?user=oiu-yTYAAAAJ&hl=en)(wangjingrui530@gmail.com) for further questions.
